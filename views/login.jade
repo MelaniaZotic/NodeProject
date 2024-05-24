@@ -1,0 +1,84 @@
+doctype html
+html
+  head
+    title Login Page
+    style.
+      /* Style for body */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      /* Style for form container */
+      .form-container {
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        width: 300px;
+      }
+
+      /* Style for form */
+      .form {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Style for form title */
+      .form-title {
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      /* Style for form fields */
+      .form-field {
+        margin-bottom: 15px;
+      }
+
+      /* Style for labels */
+      label {
+        font-weight: bold;
+      }
+
+      /* Style for input fields */
+      input[type='text'], input[type='password'] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        box-sizing: border-box;
+      }
+
+      /* Style for submit button */
+      button[type='submit'] {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+
+      /* Hover effect for submit button */
+      button[type='submit']:hover {
+        background-color: #0056b3;
+      }
+      
+  body
+    .form-container
+      h1.form-title Login Page
+      form.form(action='/users/login', method='POST')
+        .form-field
+          label(for='username') Username:
+          input(type='text', id='username', name='username', required)
+        .form-field
+          label(for='password') Password:
+          input(type='password', id='password', name='password', required)
+        button(type='submit') Login

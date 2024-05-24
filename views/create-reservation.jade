@@ -1,0 +1,174 @@
+doctype html
+html
+  head
+    title Rooms List
+    link(rel='stylesheet', href='https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap')
+    style.
+      body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+      }
+      table {
+        width: 80%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 18px;
+        text-align: left;
+      }
+      table th, table td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+      }
+      table th {
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+      }
+      input[type='text'] {
+        width: calc(100% - 20px);
+        padding: 5px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      button, a.button-link {
+        margin: 5px;
+        padding: 5px 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+      }
+      button:hover, a.button-link:hover {
+        background-color: #0056b3;
+      }
+    script.
+      function sortTable(columnIndex) {
+        var table = document.getElementById('roomsTable');
+        var rows = table.rows;
+        var switching = true;
+        var shouldSwitch;
+        var direction = 'asc'; 
+        var switchCount = 0;
+
+        while (switching) {
+          switching = false;
+          var rowsArray = Array.prototype.slice.call(rows, 1);
+
+          for (var i = 0; i < rowsArray.length - 1; i++) {
+            shouldSwitch = false;
+            var x = rowsArray[i].getElementsByTagName('TD')[columnIndex];
+            var y = rowsArray[i + 1].getElementsByTagName('TD')[columnIndex];
+
+            if (direction === 'asc') {
+              if (columnIndex === 1) { // Capacity column
+                if (parseFloat(x.innerHTML) > parseFloat(y.innerHTML)) {
+                  shouldSwitch = true;
+                  break;
+                }
+              } else {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                  shouldSwitch = true;
+                  break;
+                }
+              }
+            } else if (direction === 'desc') {
+              if (columnIndex === 1) { // Capacity column
+                if (parseFloat(x.innerHTML) < parseFloat(y.innerHTML)) {
+                  shouldSwitch = true;
+                  break;
+                }
+              } else {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                  shouldSwitch = true;
+                  break;
+                }
+              }
+            }
+          }
+
+          if (shouldSwitch) {
+            rowsArray[i].parentNode.insertBefore(rowsArray[i + 1], rowsArray[i]);
+            switching = true;
+            switchCount++;
+          } else {
+            if (switchCount === 0 && direction === 'asc') {
+              direction = 'desc';
+              switching = true;
+            }
+          }
+        }
+      }
+
+      function filterTable() {
+        var input, filter, table, tr, td, i, j, txtValue;
+        input = document.getElementById('filterInput');
+        filter = input.value.toLowerCase();
+        table = document.getElementById('roomsTable');
+        tr = table.getElementsByTagName('tr');
+
+        for (i = 1; i < tr.length; i++) {
+          tr[i].style.display = 'none';
+          td = tr[i].getElementsByTagName('td');
+          for (j = 0; j < td.length; j++) {
+            if (td[j]) {
+              txtValue = td[j].textContent || td[j].innerText;
+              if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                tr[i].style.display = '';
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      function deleteRoom(roomId) {
+        if (confirm('Are you sure you want to delete this room?')) {
+          fetch(`/rooms/delete/${roomId}`, { method: 'DELETE' })
+            .then(response => {
+              if (response.ok) {
+                location.reload();
+              } else {
+                alert('Failed to delete room');
+              }
+            });
+        }
+      }
+  body
+    h1 Rooms List
+    input(type='text', id='filterInput', onkeyup='filterTable()', placeholder='Search for rooms...')
+    table(id='roomsTable')
+      thead
+        tr
+          th(onclick='sortTable(0)') Name
+          th(onclick='sortTable(1)') Capacity
+          th(onclick='sortTable(2)') Location
+          th(onclick='sortTable(3)') Description
+          th Actions
+      tbody
+        each room in rooms
+          tr
+            td= room.name
+            td= room.capacity
+            td= room.location
+            td= room.description
+            if typeof user !== 'undefined' && user.role === 'Admin'
+              td
+                a.button-link(href=`/rooms/edit/${room._id}`) Edit
+                button(onclick=`deleteRoom('${room._id}')`) Delete
+            else if typeof user !== 'User'
+              td
+                button() Rezerva
+    a(href='/dashboard-admin') Back to Admin Dashboard
